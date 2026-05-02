@@ -83,29 +83,15 @@ FrequentList* frequent_load(const char *filename) {
         return NULL;
     }
 
-    if (fread(&list->count, sizeof(int), 1, f) != 1 ||
-        list->count < 0 || list->count > 100000) {
-        // ไฟล์เสียหาย หรือค่าไม่สมเหตุสมผล
-        list->count = 0;
-        fclose(f);
-        return list;
-    }
+    fread(&list->count, sizeof(int), 1, f);
 
     if (list->count > list->capacity) {
         list->capacity = list->count + 50;
-        FrequentEntry *new_entries = (FrequentEntry*)realloc(list->entries,
+        list->entries = (FrequentEntry*)realloc(list->entries,
                               sizeof(FrequentEntry) * list->capacity);
-        if (!new_entries) {
-            list->count = 0;
-            fclose(f);
-            return list;
-        }
-        list->entries = new_entries;
     }
 
-    if (fread(list->entries, sizeof(FrequentEntry), list->count, f) != (size_t)list->count) {
-        list->count = 0;
-    }
+    fread(list->entries, sizeof(FrequentEntry), list->count, f);
 
     fclose(f);
     return list;

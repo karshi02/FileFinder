@@ -253,11 +253,10 @@ void universal_search(UniversalIndex *idx, const char *query, UniversalEntry **r
     query_lc[sizeof(query_lc)-1] = '\0';
     for (int i = 0; query_lc[i]; i++) query_lc[i] = tolower(query_lc[i]);
     
-    // ใช้ 50 ให้สอดคล้องกับ MAX_RESULTS ของ caller
-    UniversalEntry *temp[50];
+    UniversalEntry *temp[500];
     int temp_count = 0;
     
-    for (int i = 0; i < idx->count && temp_count < 50; i++) {
+    for (int i = 0; i < idx->count && temp_count < 500; i++) {
         char name_lc[512];
         strncpy(name_lc, idx->entries[i].name, sizeof(name_lc)-1);
         name_lc[sizeof(name_lc)-1] = '\0';
@@ -268,7 +267,7 @@ void universal_search(UniversalIndex *idx, const char *query, UniversalEntry **r
         }
     }
     
-    // เรียงตาม freq_score (มากไปน้อย)
+    // เรียงตาม freq_score
     for (int i = 0; i < temp_count - 1; i++) {
         for (int j = i + 1; j < temp_count; j++) {
             if (temp[i]->freq_score < temp[j]->freq_score) {
@@ -279,7 +278,7 @@ void universal_search(UniversalIndex *idx, const char *query, UniversalEntry **r
         }
     }
     
-    int limit = temp_count < 50 ? temp_count : 50;
+    int limit = temp_count < 100 ? temp_count : 100;
     for (int i = 0; i < limit; i++) {
         results[i] = temp[i];
     }

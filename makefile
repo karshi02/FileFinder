@@ -1,33 +1,29 @@
 CC      = gcc
-CFLAGS  = -Wall -Wextra -O2 -g -D_WIN32_WINNT=0x0600 -D_WIN32_IE=0x0600
-LDFLAGS = -lshell32 -luser32 -lgdi32 -lole32 -luuid -lcomctl32
+
+# ใช้ -O2 แต่ไม่ใช้ -flto (ลด temp files)
+CFLAGS  = -Wall -Wextra -O2 -s -D_WIN32_WINNT=0x0600 -D_WIN32_IE=0x0600 -DWIN32_LEAN_AND_MEAN
+LDFLAGS = -lshell32 -luser32 -lgdi32 -lole32 -luuid -lcomctl32 -s
 OUT     = build/searcher.exe
 
+# ไม่ใช้ -flto และไม่ใช้ mkdir -p ทุกครั้ง
 SRC = main.c hotkey.c universal_scanner.c universal_ui.c frequent.c
 OBJ = $(SRC:.c=.o)
 
 all: $(OUT)
 
 $(OUT): $(OBJ)
-	mkdir -p build
 	$(CC) $(OBJ) -o $(OUT) $(CFLAGS) $(LDFLAGS)
-	@echo ""
-	@echo "=========================================="
-	@echo "  Universal Search with Frequent Apps"
-	@echo "  Ready! Press Ctrl+Space to search"
-	@echo "  Use ↓↑ to select, Enter to launch"
-	@echo "=========================================="
+	$(STRIP) $(OUT) 2>/dev/null || true
+	@echo "Build complete: $(OUT)"
 
-%.o: %.c
+# compile ทีละไฟล์
+%.o: %.c universal_scanner.h hotkey.h universal_ui.h frequent.h
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
 	rm -f $(OBJ) $(OUT)
-	@echo "Cleaned."
 
 run: $(OUT)
 	./$(OUT)
 
-rebuild: clean all
-
-.PHONY: all clean rebuild run
+.PHONY: all clean run

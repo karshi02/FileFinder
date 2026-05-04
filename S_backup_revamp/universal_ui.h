@@ -6,7 +6,4 @@
 void universal_show_popup(UniversalIndex *idx);
 void universal_close_popup(void);
 
-// เพิ่มบรรทัดนี้ถ้ายังไม่มี
-#define HOTKEY_ID 1
-
 #endif

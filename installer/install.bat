@@ -19,28 +19,30 @@ if not exist "%BUILD_EXE%" (
     exit /b 1
 )
 
-echo [1/5] Creating install directory...
+echo [1/4] Creating directories...
 if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
 if not exist "%INSTALL_DIR%\data" mkdir "%INSTALL_DIR%\data"
 
-echo [2/5] Copying files...
+echo [2/4] Copying files...
 copy /Y "%BUILD_EXE%" "%INSTALL_DIR%\%EXE_NAME%" >nul
 
-echo [3/5] Creating Start Menu shortcut...
+echo [3/4] Creating shortcuts (faster method)...
 set "SHORTCUT=%APPDATA%\Microsoft\Windows\Start Menu\Programs\Smart Finder.lnk"
-powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $sc = $ws.CreateShortcut('%SHORTCUT%'); $sc.TargetPath = '%INSTALL_DIR%\%EXE_NAME%'; $sc.WorkingDirectory = '%INSTALL_DIR%'; $sc.Save()"
-
-echo [4/5] Creating Desktop shortcut...
 set "DESKTOP_SC=%USERPROFILE%\Desktop\Smart Finder.lnk"
-powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $sc = $ws.CreateShortcut('%DESKTOP_SC%'); $sc.TargetPath = '%INSTALL_DIR%\%EXE_NAME%'; $sc.WorkingDirectory = '%INSTALL_DIR%'; $sc.Save()"
 
-echo [5/5] Registering startup...
-reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SmartFinder" /t REG_SZ /d "\"%INSTALL_DIR%\%EXE_NAME%\"" /f >nul
+
+echo [4/4] Configuring startup...
+reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SmartFinder" /t REG_SZ /d "\"%INSTALL_DIR%\%EXE_NAME%\"" /f >nul 2>&1
 
 echo.
-echo Installation complete!
+echo ================================================
+echo   Installation Complete!
+echo ================================================
+echo + mode
+echo install
+echo.
 
 start "" "%INSTALL_DIR%\%EXE_NAME%"
 
-pause
-endlocal
+timeout /t 2 >nul
+exit /b 0

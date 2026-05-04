@@ -2,10 +2,9 @@
 
 static BOOL registered = FALSE;
 
-BOOL hotkey_register(void) {
-    if (!registered) {
-        registered = RegisterHotKey(NULL, HOTKEY_ID, MOD_CONTROL, VK_SPACE);
-    }
+BOOL hotkey_register(UINT mod, UINT vk) {
+    if (registered) hotkey_unregister();
+    registered = RegisterHotKey(NULL, HOTKEY_ID, mod, vk);
     return registered;
 }
 

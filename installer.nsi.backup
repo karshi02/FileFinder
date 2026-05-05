@@ -1,11 +1,6 @@
-# สำรองไฟล์เดิม
-cp installer.nsi installer.nsi.backup
-
-# สร้างไฟล์ใหม่ด้วย echo (รับประกันว่าไม่มี BOM)
-cat > installer_new.nsi << 'EOF'
 ; ============================================================
 ;  SmartFinder Installer — NSIS Script
-;  build: makensis installer.nsi  ->  SmartFinderSetup.exe
+;  build: makensis installer.nsi  →  SmartFinderSetup.exe
 ; ============================================================
 
 !define APP_NAME     "Smart Finder"
@@ -101,7 +96,3 @@ Section "Uninstall"
     MessageBox MB_OK "Smart Finder has been uninstalled."
 
 SectionEnd
-EOF
-
-# ใช้ไฟล์ใหม่ build
-/ucrt64/bin/makensis.exe installer_new.nsi

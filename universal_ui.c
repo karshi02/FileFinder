@@ -536,3 +536,5 @@ static void resize_window(HWND hwnd, int result_count) {
                  WIN_H_BASE + vis * ROW_H + 20,
                  SWP_NOMOVE | SWP_NOZORDER);
 }
+
+

@@ -1,200 +1,244 @@
-Smart Finder - Universal Search Tool
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                           SMART FINDER - Universal Search Tool                ║
+║                           Version 1.0.0 | Windows 64-bit                      ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
 
-A powerful desktop search application that allows you to quickly find and launch files, folders, and applications using a global hotkey. The app learns from your usage patterns to show frequently used items first.
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ DESCRIPTION                                                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-FEATURES
-================================================================================
+  A fast desktop search application that allows you to instantly find and launch
+  files, folders, and applications using a global hotkey.
 
-- Global Hotkey - Press Ctrl+Space anywhere to open the search window
-- Smart Ranking - Frequently used items appear at the top of search results
-- Real-time Indexing - Automatically indexes files on first run
-- Fast Launch - Launch applications, open files, or folders directly from search
-- Lightweight - Minimal resource usage, runs in background
-- Persistent Database - Saves index and usage history for faster startup
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ FEATURES                                                                      │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-REQUIREMENTS
-================================================================================
+  ⚡ Global Hotkey      →  Press Ctrl+Space anywhere to open search
+  📊 Usage-Based Ranking →  Frequently used items appear on top
+  🔍 Fast Search        →  Results update instantly as you type
+  💾 Persistent Database →  Saves index and usage history
+  🪶 Lightweight        →  Minimal memory and CPU usage
+  🚀 Auto-Start         →  Can run on Windows startup
 
-- Windows 7 / 8 / 10 / 11 (64-bit)
-- No additional dependencies required
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ SYSTEM REQUIREMENTS                                                           │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-INSTALLATION
-================================================================================
+  ▪ Windows 7 / 8 / 10 / 11 (64-bit)
+  ▪ No additional dependencies required
+  ▪ ~20 MB free disk space
 
-Option 1: Installer (Recommended)
-1. Download SmartFinderSetup.exe
-2. Run the installer as Administrator
-3. Follow the setup wizard
-4. Program will start automatically after installation
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ INSTALLATION                                                                  │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Option 2: Portable Version
-1. Download SmartFinder_Portable.zip
-2. Extract to any folder
-3. Run searcher.exe
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Option 1: Installer (Recommended)                                          │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-USAGE
-================================================================================
+    1. Run FinderSetup.exe as Administrator
+    2. Follow the setup wizard
+    3. Program starts automatically after installation
 
-Basic Operation:
-1. Open Search Window: Press Ctrl+Space anywhere
-2. Type to Search: Start typing the name of the file, folder, or app
-3. Navigate Results: Use Up and Down arrow keys
-4. Launch Selected Item: Press Enter
-5. Close Search: Press Esc
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Option 2: Portable Version                                                 │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-Search Tips:
-- Search is case-insensitive
-- Partial matches work (e.g., "expl" finds "explorer.exe")
-- Results are ranked by usage frequency
-- Recently launched items appear at the top
+    1. Extract Finder_Portable.zip to any folder
+    2. Double-click searcher.exe to run
 
-================================================================================
-HOTKEYS SUMMARY
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ QUICK START                                                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Ctrl+Space  - Open/close search window
-Up / Down   - Navigate search results
-Enter       - Launch selected item
-Esc         - Close search window
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │                                                                             │
+  │    1. Press Ctrl+Space → Search window opens                                │
+  │    2. Start typing      → Results appear instantly                         │
+  │    3. Use ↑/↓ arrows    → Navigate through results                         │
+  │    4. Press Enter       → Launch selected item                             │
+  │    5. Press Esc         → Close search window                              │
+  │                                                                             │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-FIRST RUN
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ HOTKEY REFERENCE                                                              │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-On first launch, the application will:
-1. Create a data folder in the installation directory
-2. Scan and index files from common locations (Desktop, Documents, Downloads, Program Files, etc.)
-3. Create a usage database to track frequently launched items
+  ┌──────────────────┬────────────────────────────────────────────────────────┐
+  │ HOTKEY           │ ACTION                                                 │
+  ├──────────────────┼────────────────────────────────────────────────────────┤
+  │ Ctrl + Space     │ Open / Close search window                             │
+  │ ↑ (Up Arrow)     │ Move up in search results                              │
+  │ ↓ (Down Arrow)   │ Move down in search results                            │
+  │ Enter            │ Launch selected file / app / folder                    │
+  │ Esc              │ Close search window                                    │
+  └──────────────────┴────────────────────────────────────────────────────────┘
 
-Note: Initial scanning may take 1-2 minutes depending on your system. Subsequent launches will be instant.
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ SEARCH TIPS                                                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-FILE STRUCTURE
-================================================================================
+  💡 Case-insensitive search     → "EXPLORER" = "explorer"
+  💡 Partial keywords work       → "expl" finds "explorer.exe"
+  💡 Frequently used items       → Appear higher in results
+  💡 Instant filtering           → Results update as you type
 
-SmartFinder/
-+-- searcher.exe          # Main application
-+-- data/                 # Data directory
-    +-- universal.db      # Search index database
-    +-- frequent.db       # Usage frequency database
-    +-- config.ini        # Configuration file
-+-- install.bat           # Portable installation script
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ FIRST RUN                                                                     │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-CONFIGURATION
-================================================================================
+  On first launch, the application will automatically:
 
-The application stores settings in data/config.ini (created automatically):
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  ✓ Create data folder in installation directory                           │
+  │  ✓ Scan common locations (Desktop, Documents, Downloads, Program Files)   │
+  │  ✓ Build search index database                                            │
+  │  ✓ Initialize usage tracking database                                     │
+  └────────────────────────────────────────────────────────────────────────────┘
 
-[Settings]
-RunOnStartup=1           # 1=Enable, 0=Disable
-StartMinimized=1         # Start in system tray
-ShowNotifications=1      # Show bubble notifications
+  ⚠ Note: Initial scanning may take 1-2 minutes depending on your system.
+         Subsequent launches will be instant.
 
-================================================================================
-UNINSTALLATION
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ FILE STRUCTURE                                                                │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-If installed via installer:
-1. Open Control Panel -> Programs and Features
-2. Find "Smart Finder"
-3. Click Uninstall
+  📁 Finder/
+  │
+  ├── 📄 searcher.exe      → Main application
+  │
+  ├── 📁 data/
+  │   ├── 🗄️ universal.db  → Search index database
+  │   ├── 📊 frequent.db   → Usage frequency database
+  │   └── ⚙️ config.ini    → Configuration file
+  │
+  └── 📜 install.bat       → Portable installation script
 
-For portable version:
-- Simply delete the application folder
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ CONFIGURATION                                                                 │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-TROUBLESHOOTING
-================================================================================
+  Edit data/config.ini to customize settings:
 
-Hotkey doesn't work:
-- Another application might be using Ctrl+Space
-- Try restarting the application
-- Check if the app is running (look for icon in system tray)
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  [Settings]                                                               │
+  │  RunOnStartup=1        → 1=Enable, 0=Disable auto-start                   │
+  │  StartMinimized=1      → 1=Start to tray, 0=Normal window                 │
+  │  ShowNotifications=1   → 1=Show bubble alerts, 0=Silent                    │
+  └────────────────────────────────────────────────────────────────────────────┘
 
-Search is slow:
-- First run requires building the index - this is normal
-- Subsequent searches should be instant
-- If still slow, delete data/universal.db and restart (will re-index)
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ UNINSTALLATION                                                                │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Application won't start:
-- Check if it's already running (look in system tray)
-- Try running as Administrator
-- Check Windows Defender or antivirus isn't blocking it
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Via Installer:                                                             │
+  │   Control Panel → Programs and Features → Smart Finder → Uninstall        │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-Missing files in search results:
-- The app indexes common locations by default
-- Future versions may include custom path configuration
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ Portable Version:                                                          │
+  │   Simply delete the application folder                                     │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-BUILDING FROM SOURCE
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Prerequisites:
-- MinGW GCC (MSYS2 UCRT64 recommended)
-- Make utility
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ ❌ Hotkey doesn't work                                                     │
+  │    ▪ Another app may be using Ctrl+Space                                   │
+  │    ▪ Restart the application                                               │
+  │    ▪ Check if program is running (look for icon in system tray)           │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-Build Steps:
-cd /path/to/source
-make clean
-make all
-./build/searcher.exe
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ ❌ Slow search performance                                                 │
+  │    ▪ First run requires building index - this is normal                    │
+  │    ▪ Delete data/universal.db and restart to rebuild index                 │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-On MSYS2 UCRT64:
-pacman -S mingw-w64-ucrt-x86_64-gcc make
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ ❌ Application won't start                                                 │
+  │    ▪ Check if already running (system tray)                                │
+  │    ▪ Try Run as Administrator                                              │
+  │    ▪ Check Windows Defender/Antivirus                                      │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-Required libraries (included in MinGW):
-- shell32, user32, gdi32, ole32, uuid, comctl32
+  ┌─────────────────────────────────────────────────────────────────────────────┐
+  │ ❌ Files not appearing in search                                           │
+  │    ▪ App indexes common locations by default                               │
+  │    ▪ Try deleting data/universal.db and restart to re-index               │
+  └─────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-PERFORMANCE
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ BUILDING FROM SOURCE                                                          │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-- Memory usage: ~15-25 MB
-- CPU usage: <1% when idle
-- Index size: ~5-10 MB per 10,000 files
-- Startup time: <1 second after initial index
+  Prerequisites:
+  ▪ MinGW GCC (MSYS2 UCRT64 recommended)
+  ▪ Make utility
 
-================================================================================
-KNOWN LIMITATIONS
-================================================================================
+  Commands:
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  $ make clean          # Remove previous builds                           │
+  │  $ make all            # Compile the application                          │
+  │  $ make run            # Build and run                                    │
+  │  $ ./build/searcher.exe # Run directly                                    │
+  └────────────────────────────────────────────────────────────────────────────┘
 
-- Initial indexing only covers common Windows locations
-- No network drive support (local drives only)
-- No real-time file system monitoring (requires manual re-index or restart)
-- Command-line arguments not yet supported
+  On MSYS2 UCRT64:
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  $ pacman -S mingw-w64-ucrt-x86_64-gcc make                               │
+  └────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-VERSION HISTORY
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ PERFORMANCE                                                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-v1.0.0 - Initial release
-        - Global hotkey (Ctrl+Space)
-        - Smart frequency-based ranking
-        - Persistent database
+  ┌────────────────────────────────────────────────────────────────────────────┐
+  │  Memory usage     →  ~15-25 MB                                            │
+  │  CPU usage        →  <1% when idle                                        │
+  │  Index size       →  ~5-10 MB per 10,000 files                            │
+  │  Startup time     →  <1 second after initial index                        │
+  └────────────────────────────────────────────────────────────────────────────┘
 
-================================================================================
-LICENSE
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ KNOWN LIMITATIONS                                                             │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Proprietary - All rights reserved
+  ▪ Local drives only (no network drive support)
+  ▪ No real-time file system monitoring
+  ▪ Limited to common Windows locations
+  ▪ Command-line arguments not supported yet
 
-================================================================================
-CONTACT
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ VERSION HISTORY                                                               │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-For issues or feature requests, please contact the developer.
+  v1.0.0 (2024)
+  ├── Initial release
+  ├── Global hotkey (Ctrl+Space)
+  ├── Smart frequency-based ranking
+  ├── Persistent database
+  └── System tray support
 
-================================================================================
-CREDITS
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ LICENSE                                                                       │
+└───────────────────────────────────────────────────────────────────────────────┘
 
-Developed with C and Win32 API
+  Proprietary - All rights reserved
 
-================================================================================
-Enjoy Smart Finder! Press Ctrl+Space to search everything instantly!
-================================================================================
+┌───────────────────────────────────────────────────────────────────────────────┐
+│ CREDITS                                                                       │
+└───────────────────────────────────────────────────────────────────────────────┘
+
+  Developed with C and Win32 API
+
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                                                                               ║
+║        Press Ctrl+Space and start searching everything instantly!            ║
+║                                                                               ║
+╚═══════════════════════════════════════════════════════════════════════════════╝

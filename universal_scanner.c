@@ -53,145 +53,94 @@ int universal_add(UniversalIndex *idx, const char *name, const char *path, const
     return 0;
 }
 
-static void scan_apps(UniversalIndex *idx) {
-    char startmenu_path[1024];
-    
-    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_COMMON_STARTMENU, NULL, 0, startmenu_path))) {
-        char search_path[2048];
-        snprintf(search_path, sizeof(search_path), "%s\\*.lnk", startmenu_path);
-        
-        WIN32_FIND_DATAA findData;
-        HANDLE hFind = FindFirstFileA(search_path, &findData);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    char fullpath[2048];
-                    snprintf(fullpath, sizeof(fullpath), "%s\\%s", startmenu_path, findData.cFileName);
-                    
-                    char name[256];
-                    strncpy(name, findData.cFileName, sizeof(name)-1);
-                    name[sizeof(name)-1] = '\0';
-                    char *ext = strstr(name, ".lnk");
-                    if (ext) *ext = '\0';
-                    
-                    universal_add(idx, name, fullpath, "app");
-                }
-            } while (FindNextFileA(hFind, &findData));
-            FindClose(hFind);
-        }
-    }
-    
-    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_STARTMENU, NULL, 0, startmenu_path))) {
-        char search_path[2048];
-        snprintf(search_path, sizeof(search_path), "%s\\*.lnk", startmenu_path);
-        
-        WIN32_FIND_DATAA findData;
-        HANDLE hFind = FindFirstFileA(search_path, &findData);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    char fullpath[2048];
-                    snprintf(fullpath, sizeof(fullpath), "%s\\%s", startmenu_path, findData.cFileName);
-                    
-                    char name[256];
-                    strncpy(name, findData.cFileName, sizeof(name)-1);
-                    name[sizeof(name)-1] = '\0';
-                    char *ext = strstr(name, ".lnk");
-                    if (ext) *ext = '\0';
-                    
-                    universal_add(idx, name, fullpath, "app");
-                }
-            } while (FindNextFileA(hFind, &findData));
-            FindClose(hFind);
-        }
-    }
-}
-
-static void scan_programs(UniversalIndex *idx, const char *dir, int depth) {
-    if (depth > 3) return;
-    
-    char search_path[2048];
-    snprintf(search_path, sizeof(search_path), "%s\\*", dir);
-    
-    WIN32_FIND_DATAA findData;
-    HANDLE hFind = FindFirstFileA(search_path, &findData);
-    if (hFind == INVALID_HANDLE_VALUE) return;
-    
-    do {
-        if (strcmp(findData.cFileName, ".") == 0 || strcmp(findData.cFileName, "..") == 0)
-            continue;
-        
-        char fullpath[2048];
-        snprintf(fullpath, sizeof(fullpath), "%s\\%s", dir, findData.cFileName);
-        
-        if (findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-            scan_programs(idx, fullpath, depth + 1);
-        } else {
-            char *ext = strrchr(findData.cFileName, '.');
-            if (ext && (strcmp(ext, ".exe") == 0 || strcmp(ext, ".lnk") == 0)) {
-                char name[256];
-                strncpy(name, findData.cFileName, sizeof(name)-1);
-                name[sizeof(name)-1] = '\0';
-                char *dot = strrchr(name, '.');
-                if (dot) *dot = '\0';
-                
-                universal_add(idx, name, fullpath, "program");
-            }
-        }
-    } while (FindNextFileA(hFind, &findData));
-    
-    FindClose(hFind);
-}
-
-static void scan_important_folders(UniversalIndex *idx) {
-    const char *folders[] = {
-        "C:\\Users",
-        "C:\\Program Files",
-        "C:\\Program Files (x86)"
-    };
-    
-    for (int i = 0; i < 3; i++) {
-        scan_programs(idx, folders[i], 0);
-    }
-}
-
 
 static void scan_recent_files(UniversalIndex *idx) {
     char recent_path[1024];
-    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_RECENT, NULL, 0, recent_path))) {
-        char search_path[2048];
-        snprintf(search_path, sizeof(search_path), "%s\\*", recent_path);
-        
-        WIN32_FIND_DATAA findData;
-        HANDLE hFind = FindFirstFileA(search_path, &findData);
-        if (hFind != INVALID_HANDLE_VALUE) {
-            do {
-                if (!(findData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    char fullpath[2048];
-                    snprintf(fullpath, sizeof(fullpath), "%s\\%s", recent_path, findData.cFileName);
-                    universal_add(idx, findData.cFileName, fullpath, "recent");
-                }
-            } while (FindNextFileA(hFind, &findData));
-            FindClose(hFind);
-        }
-    }
+    if (!SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_RECENT, NULL, 0, recent_path)))
+        return;
+
+    char search_path[2048];
+    snprintf(search_path, sizeof(search_path), "%s\\*", recent_path);
+
+    WIN32_FIND_DATAA fd;
+    HANDLE hFind = FindFirstFileA(search_path, &fd);
+    if (hFind == INVALID_HANDLE_VALUE) return;
+
+    do {
+        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) continue;
+        char *ext = strrchr(fd.cFileName, '.');
+        if (!ext || _stricmp(ext, ".lnk") != 0) continue;
+
+        char fullpath[2048];
+        snprintf(fullpath, sizeof(fullpath), "%s\\%s", recent_path, fd.cFileName);
+
+        char name[260];
+        snprintf(name, sizeof(name), "%s", fd.cFileName);
+        char *dot = strrchr(name, '.');
+        if (dot) *dot = '\0';
+
+        universal_add(idx, name, fullpath, "recent");
+    } while (FindNextFileA(hFind, &fd));
+
+    FindClose(hFind);
 }
+
+/* recurse เข้า subfolder ของ Start Menu — เร็วมากเพราะมีแค่ .lnk */
+static void scan_startmenu_dir(UniversalIndex *idx, const char *dir) {
+    char search_path[2048];
+    snprintf(search_path, sizeof(search_path), "%s\\*", dir);
+
+    WIN32_FIND_DATAA fd;
+    HANDLE hFind = FindFirstFileA(search_path, &fd);
+    if (hFind == INVALID_HANDLE_VALUE) return;
+
+    do {
+        if (strcmp(fd.cFileName, ".") == 0 || strcmp(fd.cFileName, "..") == 0)
+            continue;
+
+        char fullpath[2048];
+        snprintf(fullpath, sizeof(fullpath), "%s\\%s", dir, fd.cFileName);
+
+        if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
+            scan_startmenu_dir(idx, fullpath);   /* recurse */
+        } else {
+            char *ext = strrchr(fd.cFileName, '.');
+            if (ext && _stricmp(ext, ".lnk") == 0) {
+                char name[260];
+                snprintf(name, sizeof(name), "%s", fd.cFileName);
+                name[sizeof(name) - 1] = '\0';
+                char *dot = strrchr(name, '.');
+                if (dot) *dot = '\0';
+                universal_add(idx, name, fullpath, "app");
+            }
+        }
+    } while (FindNextFileA(hFind, &fd));
+
+    FindClose(hFind);
+}
+
+static void scan_apps(UniversalIndex *idx) {
+    char path[1024];
+    /* All Users Start Menu */
+    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_COMMON_STARTMENU, NULL, 0, path)))
+        scan_startmenu_dir(idx, path);
+    /* Current User Start Menu */
+    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_STARTMENU, NULL, 0, path)))
+        scan_startmenu_dir(idx, path);
+    /* Desktop shortcuts */
+    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_DESKTOPDIRECTORY, NULL, 0, path)))
+        scan_startmenu_dir(idx, path);
+    if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_COMMON_DESKTOPDIRECTORY, NULL, 0, path)))
+        scan_startmenu_dir(idx, path);
+}
+
 
 int universal_scan_all(UniversalIndex *idx) {
     if (!idx) return -1;
-    
-    printf("Scanning apps from Start Menu...\n");
+    /* Start Menu + Desktop — เร็วมาก ~100ms */
     scan_apps(idx);
-    printf("  Found %d items\n", idx->count);
-    
-    printf("Scanning programs from Program Files...\n");
-    scan_important_folders(idx);
-    printf("  Total: %d items\n", idx->count);
-    
-    printf("Scanning recent files...\n");
+    /* Recent files */
     scan_recent_files(idx);
-    printf("  Total: %d items\n", idx->count);
-    
     return idx->count;
 }
 

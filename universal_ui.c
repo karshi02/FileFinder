@@ -6,6 +6,7 @@
 #define _WIN32_WINNT 0x0600
 #include <windows.h>
 #include <shellapi.h>   /* ExtractIconExA, SHGetFileInfoA */
+#include <commctrl.h>   /* ImageList_* for HQ icon */
 #include <shlobj.h>
 #include <stdio.h>
 #include <string.h>
@@ -17,8 +18,8 @@
 /* ── layout ─────────────────────────────────────────────── */
 #define WIN_W        700
 #define WIN_H_BASE    60
-#define ROW_H         36      /* สูงพอให้ไอคอน 24px + padding */
-#define ICON_SIZE     24
+#define ROW_H         44      /* สูงพอให้ไอคอน 32px + padding */
+#define ICON_SIZE     32
 #define ICON_PAD_X     6
 #define TEXT_OFF_X    (ICON_PAD_X*2 + ICON_SIZE)   /* x เริ่มต้นของ text */
 #define MAX_VISIBLE   12
@@ -47,11 +48,23 @@ static HWND            g_hEdit        = NULL;
 static HWND            g_hList        = NULL;
 static HFONT           g_hFont        = NULL;
 static HFONT           g_hFontSmall   = NULL;
+static HFONT           g_hFontEdit    = NULL;
 static HICON           g_hDefaultIcon = NULL;   /* fallback icon */
 static UniversalEntry *g_results[MAX_RESULTS];
 static int             g_result_count = 0;
 static WNDPROC         g_oldEditProc  = NULL;
 static WNDPROC         g_oldListProc  = NULL;
+
+/* settings จาก main */
+static BOOL  g_cfg_show_recent     = TRUE;
+static int   g_cfg_max_results     = 12;
+static BOOL  g_cfg_close_on_launch = TRUE;
+
+void universal_apply_settings(BOOL show_recent, int max_results, BOOL close_on_launch) {
+    g_cfg_show_recent     = show_recent;
+    g_cfg_max_results     = max_results < 5 ? 5 : (max_results > 50 ? 50 : max_results);
+    g_cfg_close_on_launch = close_on_launch;
+}
 
 /* ── forward declarations ────────────────────────────────── */
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
@@ -94,21 +107,39 @@ static HICON get_icon(const char *path) {
     if (g_icon_cache_count >= ICON_CACHE_SIZE)
         return g_hDefaultIcon;
 
-    /* ดึงไอคอนด้วย SHGetFileInfoA (รองรับ .lnk, .exe, .dll, ฯลฯ) */
-    SHFILEINFOA sfi = {0};
-    UINT flags = SHGFI_ICON | SHGFI_SMALLICON | SHGFI_USEFILEATTRIBUTES;
-    BOOL ok = (BOOL)SHGetFileInfoA(path, FILE_ATTRIBUTE_NORMAL, &sfi,
-                                   sizeof(sfi), flags);
+    /*
+     * ดึง large icon (32x32) โดยตรง — ชัดกว่า small (16x16) มาก
+     * ลำดับ: ExtractIconExA (large) → SHGetFileInfoA (large) → fallback
+     */
+    HICON hIcon = NULL;
 
-    HICON hIcon = (ok && sfi.hIcon) ? sfi.hIcon : NULL;
-
-    /* ถ้า small icon ขนาดไม่พอ ลองดึง large แล้ว scale */
-    if (!hIcon) {
+    /* วิธีที่ 1: ExtractIconExA — ได้ HICON ขนาด system large (32x32) */
+    {
         HICON hLarge = NULL, hSmall = NULL;
-        if (ExtractIconExA(path, 0, &hLarge, &hSmall, 1) > 0) {
-            hIcon = hSmall ? hSmall : hLarge;
-            if (hLarge && hLarge != hIcon) DestroyIcon(hLarge);
+        UINT n = ExtractIconExA(path, 0, &hLarge, &hSmall, 1);
+        if (n > 0 && hLarge) {
+            hIcon = hLarge;                     /* ใช้ large icon */
+            if (hSmall) DestroyIcon(hSmall);    /* ทิ้ง small */
+        } else if (n > 0 && hSmall) {
+            hIcon = hSmall;
         }
+    }
+
+    /* วิธีที่ 2: SHGetFileInfoA — fallback และรองรับ .lnk resolve */
+    if (!hIcon) {
+        SHFILEINFOA sfi = {0};
+        UINT flags = SHGFI_ICON | SHGFI_LARGEICON;   /* LARGEICON = 32x32 */
+        if ((BOOL)SHGetFileInfoA(path, 0, &sfi, sizeof(sfi), flags) && sfi.hIcon)
+            hIcon = sfi.hIcon;
+    }
+
+    /* วิธีที่ 3: ถ้าเป็น .lnk ให้ resolve แล้วลองอีกรอบ */
+    if (!hIcon) {
+        SHFILEINFOA sfi = {0};
+        UINT flags = SHGFI_ICON | SHGFI_LARGEICON | SHGFI_USEFILEATTRIBUTES;
+        if ((BOOL)SHGetFileInfoA(path, FILE_ATTRIBUTE_NORMAL, &sfi, sizeof(sfi), flags)
+            && sfi.hIcon)
+            hIcon = sfi.hIcon;
     }
 
     /* บันทึก cache */
@@ -149,7 +180,7 @@ static void open_selected(HWND hwnd) {
     int sel = (int)SendMessageA(g_hList, LB_GETCURSEL, 0, 0);
     if (sel >= 0 && sel < g_result_count && g_results[sel]) {
         open_item(g_results[sel]->name, g_results[sel]->path);
-        DestroyWindow(hwnd);
+        if (g_cfg_close_on_launch) DestroyWindow(hwnd);
     }
 }
 
@@ -191,6 +222,12 @@ static void populate_list(HWND hwnd, HWND hList) {
 static void show_recent(HWND hwnd, HWND hList) {
     g_result_count = 0;
 
+    if (!g_cfg_show_recent) {
+        SendMessageA(hList, LB_RESETCONTENT, 0, 0);
+        resize_window(hwnd, 0);
+        return;
+    }
+
     if (!g_universal) {
         SendMessageA(hList, LB_RESETCONTENT, 0, 0);
         resize_window(hwnd, 0);
@@ -213,7 +250,7 @@ static void show_recent(HWND hwnd, HWND hList) {
             }
 
     /* รอบ 2: เติม app ทั่วไปจนครบ 12 */
-    for (int i = 0; i < g_universal->count && added < 12; i++) {
+    for (int i = 0; i < g_universal->count && added < g_cfg_max_results; i++) {
         if (g_universal->entries[i].freq_score == 0 &&
             strcmp(g_universal->entries[i].type, "app") == 0)
             g_results[added++] = &g_universal->entries[i];
@@ -242,6 +279,7 @@ void universal_close_popup(void) {
 }
 
 void universal_show_popup(UniversalIndex *idx) {
+    /* toggle: ถ้าเปิดอยู่แล้ว ปิด */
     if (g_hwnd && IsWindow(g_hwnd)) { universal_close_popup(); return; }
     if (!idx) return;
     g_universal = idx;
@@ -262,16 +300,53 @@ void universal_show_popup(UniversalIndex *idx) {
     int sw = GetSystemMetrics(SM_CXSCREEN);
     int sh = GetSystemMetrics(SM_CYSCREEN);
 
+    /* ── Step 1: attach thread input ก่อน create window ──
+       ทำก่อน CreateWindowExA เพราะ WM_CREATE จะเรียก SetFocus ภายใน */
+    HWND fg_win   = GetForegroundWindow();
+    DWORD fg_tid  = GetWindowThreadProcessId(fg_win, NULL);
+    DWORD our_tid = GetCurrentThreadId();
+    BOOL  attached = FALSE;
+
+    if (fg_tid && fg_tid != our_tid) {
+        attached = AttachThreadInput(our_tid, fg_tid, TRUE);
+    }
+
+    /* ── Step 2: สร้าง window ไม่ใส่ WS_VISIBLE ก่อน ──
+       เพื่อให้ attach thread input ทำงานก่อน window ปรากฏ */
     g_hwnd = CreateWindowExA(
         WS_EX_TOPMOST | WS_EX_TOOLWINDOW,
         "UniversalFinder",
         "Smart Finder",
-        WS_POPUP | WS_VISIBLE | WS_CAPTION,
+        WS_POPUP | WS_CAPTION,   /* ไม่มี WS_VISIBLE */
         (sw - WIN_W) / 2, sh / 4,
         WIN_W, WIN_H_BASE,
         NULL, NULL, GetModuleHandle(NULL), NULL);
 
-    if (g_hwnd) { SetForegroundWindow(g_hwnd); SetFocus(g_hEdit); }
+    if (g_hwnd) {
+        /* ── Step 3: บังคับ foreground ── */
+        SetWindowPos(g_hwnd, HWND_TOPMOST, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE);
+        ShowWindow(g_hwnd, SW_SHOW);
+        SetForegroundWindow(g_hwnd);
+
+        /* ── Step 4: focus ไป edit ── */
+        if (g_hEdit && IsWindow(g_hEdit)) {
+            SetFocus(g_hEdit);
+            /* clear text เก่าออก */
+            SetWindowTextA(g_hEdit, "");
+        }
+
+        /* ── Step 5: detach ── */
+        if (attached) AttachThreadInput(our_tid, fg_tid, FALSE);
+
+        /* ── Step 6: reload recent ── */
+        if (g_hList && IsWindow(g_hList))
+            show_recent(g_hwnd, g_hList);
+
+        UpdateWindow(g_hwnd);
+    } else {
+        if (attached) AttachThreadInput(our_tid, fg_tid, FALSE);
+    }
 }
 
 /* ================================================================
@@ -340,7 +415,7 @@ static void draw_item(DRAWITEMSTRUCT *di) {
     if (hIcon) {
         int iy = rc.top + (ROW_H - ICON_SIZE) / 2;
         DrawIconEx(dc, rc.left + ICON_PAD_X, iy,
-                   hIcon, ICON_SIZE, ICON_SIZE, 0, NULL, DI_NORMAL);
+                   hIcon, ICON_SIZE, ICON_SIZE, 0, NULL, DI_NORMAL | DI_COMPAT);
     }
 
     /* ── ชื่อแอพ (main text) ── */
@@ -390,6 +465,16 @@ static void draw_item(DRAWITEMSTRUCT *di) {
 static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
     switch (msg) {
 
+    /* ── ป้องกัน flicker ── */
+    case WM_ERASEBKGND: {
+        HDC dc = (HDC)wParam;
+        RECT rc; GetClientRect(hwnd, &rc);
+        HBRUSH hb = CreateSolidBrush(RGB(28, 28, 30));
+        FillRect(dc, &rc, hb);
+        DeleteObject(hb);
+        return 1;
+    }
+
     /* ── สร้าง controls ── */
     case WM_CREATE: {
         /* font หลัก */
@@ -414,11 +499,11 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
             hwnd, (HMENU)ID_EDIT, GetModuleHandle(NULL), NULL);
 
         /* ตั้งค่า font ใหญ่สำหรับ edit */
-        HFONT hEditFont = CreateFontA(22, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+        g_hFontEdit = CreateFontA(22, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                                       DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
                                       CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
                                       DEFAULT_PITCH | FF_DONTCARE, "Segoe UI");
-        SendMessageA(g_hEdit, WM_SETFONT, (WPARAM)hEditFont, TRUE);
+        SendMessageA(g_hEdit, WM_SETFONT, (WPARAM)g_hFontEdit, TRUE);
 
         g_oldEditProc = (WNDPROC)SetWindowLongPtrA(
             g_hEdit, GWLP_WNDPROC, (LONG_PTR)EditProc);
@@ -438,9 +523,10 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         g_oldListProc = (WNDPROC)SetWindowLongPtrA(
             g_hList, GWLP_WNDPROC, (LONG_PTR)ListProc);
 
-        /* แสดงแอพล่าสุดทันที */
-        show_recent(hwnd, g_hList);
-        SetFocus(g_hEdit);
+        /* placeholder hint ใน edit */
+        SendMessageA(g_hEdit, EM_SETCUEBANNER, FALSE,
+                     (LPARAM)L"Type to search apps...");
+        /* show_recent และ SetFocus ทำใน show_popup หลัง attach thread */
         break;
     }
 
@@ -490,6 +576,7 @@ static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPara
         free_icon_cache();
         if (g_hFont)      { DeleteObject(g_hFont);      g_hFont      = NULL; }
         if (g_hFontSmall) { DeleteObject(g_hFontSmall); g_hFontSmall = NULL; }
+        if (g_hFontEdit)  { DeleteObject(g_hFontEdit);  g_hFontEdit  = NULL; }
         if (g_oldEditProc && g_hEdit)
             SetWindowLongPtrA(g_hEdit, GWLP_WNDPROC, (LONG_PTR)g_oldEditProc);
         if (g_oldListProc && g_hList)
@@ -513,7 +600,7 @@ static void do_search(HWND hwnd, HWND hEdit, HWND hList) {
     int temp_count = 0;
     universal_search(g_universal, query, temp, &temp_count);
 
-    int limit = temp_count < MAX_RESULTS ? temp_count : MAX_RESULTS;
+    int limit = temp_count < g_cfg_max_results ? temp_count : g_cfg_max_results;
     for (int i = 0; i < limit; i++) g_results[i] = temp[i];
     g_result_count = limit;
 
@@ -536,5 +623,3 @@ static void resize_window(HWND hwnd, int result_count) {
                  WIN_H_BASE + vis * ROW_H + 20,
                  SWP_NOMOVE | SWP_NOZORDER);
 }
-
-

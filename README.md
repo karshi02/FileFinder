@@ -1,244 +1,143 @@
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                           SMART FINDER - Universal Search Tool                ║
-║                           Version 1.0.0 | Windows 64-bit                      ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
+# Smart Finder
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ DESCRIPTION                                                                   │
-└───────────────────────────────────────────────────────────────────────────────┘
+**Universal App Launcher for Windows** — กด hotkey ได้ทุกที่ ค้นหาและเปิดแอพได้ทันที
 
-  A fast desktop search application that allows you to instantly find and launch
-  files, folders, and applications using a global hotkey.
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ FEATURES                                                                      │
-└───────────────────────────────────────────────────────────────────────────────┘
+## ภาพรวม
 
-  ⚡ Global Hotkey      →  Press Ctrl+Space anywhere to open search
-  📊 Usage-Based Ranking →  Frequently used items appear on top
-  🔍 Fast Search        →  Results update instantly as you type
-  💾 Persistent Database →  Saves index and usage history
-  🪶 Lightweight        →  Minimal memory and CPU usage
-  🚀 Auto-Start         →  Can run on Windows startup
+Smart Finder เป็นโปรแกรม background ที่รอรับ hotkey แล้วแสดง popup ค้นหาแอพและไฟล์บน Windows โดยไม่ต้องเปิด Start Menu หรือ Explorer
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ SYSTEM REQUIREMENTS                                                           │
-└───────────────────────────────────────────────────────────────────────────────┘
+```
+กด Ctrl+Alt+Space  →  popup ขึ้น  →  พิมพ์ชื่อแอพ  →  Enter เพื่อเปิด
+```
 
-  ▪ Windows 7 / 8 / 10 / 11 (64-bit)
-  ▪ No additional dependencies required
-  ▪ ~20 MB free disk space
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ INSTALLATION                                                                  │
-└───────────────────────────────────────────────────────────────────────────────┘
+## Features
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ Option 1: Installer (Recommended)                                          │
-  └─────────────────────────────────────────────────────────────────────────────┘
+| Feature | รายละเอียด |
+|---------|-----------|
+| **Global Hotkey** | กด hotkey ได้จากทุก window ที่กำลังใช้งาน |
+| **App Icons** | แสดงไอคอนจริงของแต่ละแอพใน popup |
+| **Frequent Apps** | แอพที่ใช้บ่อยขึ้นมาก่อนอัตโนมัติ |
+| **Fast Search** | ผลลัพธ์อัปเดตทันทีขณะพิมพ์ |
+| **Run at Startup** | ตั้งให้รันอัตโนมัติเมื่อเปิด Windows ได้ |
+| **Custom Hotkey** | เปลี่ยน hotkey ได้ตามต้องการผ่าน Settings |
+| **System Tray** | รันเบื้องหลังแบบ tray icon ไม่รกหน้าจอ |
+| **Index Cache** | scan ครั้งแรกเท่านั้น ครั้งต่อไปโหลด cache เร็วมาก |
 
-    1. Run FinderSetup.exe as Administrator
-    2. Follow the setup wizard
-    3. Program starts automatically after installation
+---
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ Option 2: Portable Version                                                 │
-  └─────────────────────────────────────────────────────────────────────────────┘
+## การใช้งาน
 
-    1. Extract Finder_Portable.zip to any folder
-    2. Double-click searcher.exe to run
+### เปิด Popup
+- กด **Ctrl+Alt+Space** (default) จากทุกที่
+- หรือ **คลิกซ้าย** ที่ tray icon มุมขวาล่าง
+- หรือ **คลิกขวา → Open Search**
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ QUICK START                                                                   │
-└───────────────────────────────────────────────────────────────────────────────┘
+### ภายใน Popup
+| ปุ่ม | หน้าที่ |
+|------|--------|
+| พิมพ์ตัวอักษร | ค้นหาแอพ |
+| `↑` `↓` | เลื่อนเลือก |
+| `Enter` | เปิดแอพที่เลือก |
+| `ESC` | ปิด popup |
+| `Backspace` | ลบตัวอักษร |
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │                                                                             │
-  │    1. Press Ctrl+Space → Search window opens                                │
-  │    2. Start typing      → Results appear instantly                         │
-  │    3. Use ↑/↓ arrows    → Navigate through results                         │
-  │    4. Press Enter       → Launch selected item                             │
-  │    5. Press Esc         → Close search window                              │
-  │                                                                             │
-  └─────────────────────────────────────────────────────────────────────────────┘
+### Settings
+คลิกขวาที่ tray icon → **Settings**
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ HOTKEY REFERENCE                                                              │
-└───────────────────────────────────────────────────────────────────────────────┘
+| ตัวเลือก | หน้าที่ |
+|----------|--------|
+| Hotkey | กด key combo ที่ต้องการเพื่อเปลี่ยน |
+| Run at Startup | เปิด/ปิด การรันอัตโนมัติตอนเปิด Windows |
+| Show recent apps | เปิด/ปิด แสดงแอพล่าสุดตอนเปิด popup |
+| Close popup after launch | เปิด/ปิด ปิด popup หลังกด Enter |
+| Max results | จำนวนผลลัพธ์สูงสุด (5–50) |
 
-  ┌──────────────────┬────────────────────────────────────────────────────────┐
-  │ HOTKEY           │ ACTION                                                 │
-  ├──────────────────┼────────────────────────────────────────────────────────┤
-  │ Ctrl + Space     │ Open / Close search window                             │
-  │ ↑ (Up Arrow)     │ Move up in search results                              │
-  │ ↓ (Down Arrow)   │ Move down in search results                            │
-  │ Enter            │ Launch selected file / app / folder                    │
-  │ Esc              │ Close search window                                    │
-  └──────────────────┴────────────────────────────────────────────────────────┘
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ SEARCH TIPS                                                                   │
-└───────────────────────────────────────────────────────────────────────────────┘
+## Installation
 
-  💡 Case-insensitive search     → "EXPLORER" = "explorer"
-  💡 Partial keywords work       → "expl" finds "explorer.exe"
-  💡 Frequently used items       → Appear higher in results
-  💡 Instant filtering           → Results update as you type
+### วิธีที่ 1 — Setup.exe (แนะนำ)
+```
+1. รัน SmartFinderSetup.exe
+2. โปรแกรมติดตั้งและรันอัตโนมัติ
+3. กด Ctrl+Alt+Space เพื่อเริ่มใช้งาน
+```
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ FIRST RUN                                                                     │
-└───────────────────────────────────────────────────────────────────────────────┘
+### วิธีที่ 2 — Portable
+```
+1. copy build\searcher.exe ไปไว้ที่ใดก็ได้
+2. ดับเบิลคลิกเพื่อรัน
+3. ข้อมูลจะถูกบันทึกใน data\ ในโฟลเดอร์เดียวกัน
+```
 
-  On first launch, the application will automatically:
+### วิธีที่ 3 — Build จาก Source
+```bash
+# ต้องการ MSYS2 + MinGW-w64
+make          # build
+make run      # รัน
+make installer  # สร้าง Setup.exe (ต้องการ NSIS)
+```
 
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │  ✓ Create data folder in installation directory                           │
-  │  ✓ Scan common locations (Desktop, Documents, Downloads, Program Files)   │
-  │  ✓ Build search index database                                            │
-  │  ✓ Initialize usage tracking database                                     │
-  └────────────────────────────────────────────────────────────────────────────┘
+---
 
-  ⚠ Note: Initial scanning may take 1-2 minutes depending on your system.
-         Subsequent launches will be instant.
+## โครงสร้างโปรเจกต์
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ FILE STRUCTURE                                                                │
-└───────────────────────────────────────────────────────────────────────────────┘
+```
+smart-finder/
+├── main.c                # entry point, tray icon, message loop
+├── hotkey.c/.h           # global hotkey registration (auto-fallback)
+├── universal_scanner.c/.h # scan Start Menu, index, search
+├── universal_ui.c/.h     # popup window, owner-draw listbox, icons
+├── frequent.c/.h         # บันทึกและเรียงแอพที่ใช้บ่อย
+├── settings.c/.h         # โหลด/บันทึก settings + dialog
+├── makefile              # build system
+├── installer.nsi         # NSIS installer script
+├── build_release.bat     # one-click build + package
+└── data/
+    ├── universal.db      # index cache (binary)
+    ├── frequent.db       # usage stats (binary)
+    └── settings.ini      # user settings
+```
 
-  📁 Finder/
-  │
-  ├── 📄 searcher.exe      → Main application
-  │
-  ├── 📁 data/
-  │   ├── 🗄️ universal.db  → Search index database
-  │   ├── 📊 frequent.db   → Usage frequency database
-  │   └── ⚙️ config.ini    → Configuration file
-  │
-  └── 📜 install.bat       → Portable installation script
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ CONFIGURATION                                                                 │
-└───────────────────────────────────────────────────────────────────────────────┘
+## System Requirements
 
-  Edit data/config.ini to customize settings:
+- Windows 7 / 8 / 10 / 11 (64-bit)
+- RAM ~10 MB
+- Disk ~5 MB
+- ไม่ต้องติดตั้ง runtime เพิ่มเติม
 
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │  [Settings]                                                               │
-  │  RunOnStartup=1        → 1=Enable, 0=Disable auto-start                   │
-  │  StartMinimized=1      → 1=Start to tray, 0=Normal window                 │
-  │  ShowNotifications=1   → 1=Show bubble alerts, 0=Silent                    │
-  └────────────────────────────────────────────────────────────────────────────┘
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ UNINSTALLATION                                                                │
-└───────────────────────────────────────────────────────────────────────────────┘
+## Build Requirements
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ Via Installer:                                                             │
-  │   Control Panel → Programs and Features → Smart Finder → Uninstall        │
-  └─────────────────────────────────────────────────────────────────────────────┘
+- [MSYS2](https://www.msys2.org/) with UCRT64
+- `pacman -S mingw-w64-ucrt-x86_64-gcc`
+- [NSIS](https://nsis.sourceforge.io/) (สำหรับสร้าง installer เท่านั้น)
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ Portable Version:                                                          │
-  │   Simply delete the application folder                                     │
-  └─────────────────────────────────────────────────────────────────────────────┘
+---
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ TROUBLESHOOTING                                                               │
-└───────────────────────────────────────────────────────────────────────────────┘
+## Troubleshooting
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ ❌ Hotkey doesn't work                                                     │
-  │    ▪ Another app may be using Ctrl+Space                                   │
-  │    ▪ Restart the application                                               │
-  │    ▪ Check if program is running (look for icon in system tray)           │
-  └─────────────────────────────────────────────────────────────────────────────┘
+**Hotkey ไม่ทำงาน**
+Hotkey อาจชนกับโปรแกรมอื่น (เช่น VS Code ใช้ Ctrl+Space) คลิกขวา tray → Settings → เปลี่ยน hotkey
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ ❌ Slow search performance                                                 │
-  │    ▪ First run requires building index - this is normal                    │
-  │    ▪ Delete data/universal.db and restart to rebuild index                 │
-  └─────────────────────────────────────────────────────────────────────────────┘
+**Popup ไม่ขึ้น**
+คลิกซ้ายที่ tray icon หรือ คลิกขวา → Open Search แทนได้
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ ❌ Application won't start                                                 │
-  │    ▪ Check if already running (system tray)                                │
-  │    ▪ Try Run as Administrator                                              │
-  │    ▪ Check Windows Defender/Antivirus                                      │
-  └─────────────────────────────────────────────────────────────────────────────┘
+**แอพที่ติดตั้งใหม่ไม่ขึ้น**
+ลบ `data\universal.db` แล้วรันใหม่ โปรแกรมจะ scan ใหม่อัตโนมัติ
 
-  ┌─────────────────────────────────────────────────────────────────────────────┐
-  │ ❌ Files not appearing in search                                           │
-  │    ▪ App indexes common locations by default                               │
-  │    ▪ Try deleting data/universal.db and restart to re-index               │
-  └─────────────────────────────────────────────────────────────────────────────┘
+**โปรแกรมรันซ้ำไม่ได้**
+โปรแกรมมี mutex ป้องกัน ถ้าเห็น popup แจ้ง "กำลังทำงานอยู่แล้ว" ให้ดูที่ System Tray
 
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ BUILDING FROM SOURCE                                                          │
-└───────────────────────────────────────────────────────────────────────────────┘
+---
 
-  Prerequisites:
-  ▪ MinGW GCC (MSYS2 UCRT64 recommended)
-  ▪ Make utility
+## License
 
-  Commands:
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │  $ make clean          # Remove previous builds                           │
-  │  $ make all            # Compile the application                          │
-  │  $ make run            # Build and run                                    │
-  │  $ ./build/searcher.exe # Run directly                                    │
-  └────────────────────────────────────────────────────────────────────────────┘
-
-  On MSYS2 UCRT64:
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │  $ pacman -S mingw-w64-ucrt-x86_64-gcc make                               │
-  └────────────────────────────────────────────────────────────────────────────┘
-
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ PERFORMANCE                                                                   │
-└───────────────────────────────────────────────────────────────────────────────┘
-
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │  Memory usage     →  ~15-25 MB                                            │
-  │  CPU usage        →  <1% when idle                                        │
-  │  Index size       →  ~5-10 MB per 10,000 files                            │
-  │  Startup time     →  <1 second after initial index                        │
-  └────────────────────────────────────────────────────────────────────────────┘
-
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ KNOWN LIMITATIONS                                                             │
-└───────────────────────────────────────────────────────────────────────────────┘
-
-  ▪ Local drives only (no network drive support)
-  ▪ No real-time file system monitoring
-  ▪ Limited to common Windows locations
-  ▪ Command-line arguments not supported yet
-
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ VERSION HISTORY                                                               │
-└───────────────────────────────────────────────────────────────────────────────┘
-
-  v1.0.0 (2024)
-  ├── Initial release
-  ├── Global hotkey (Ctrl+Space)
-  ├── Smart frequency-based ranking
-  ├── Persistent database
-  └── System tray support
-
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ LICENSE                                                                       │
-└───────────────────────────────────────────────────────────────────────────────┘
-
-  Proprietary - All rights reserved
-
-┌───────────────────────────────────────────────────────────────────────────────┐
-│ CREDITS                                                                       │
-└───────────────────────────────────────────────────────────────────────────────┘
-
-  Developed with C and Win32 API
-
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║        Press Ctrl+Space and start searching everything instantly!            ║
-║                                                                               ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
+MIT License — ใช้งานได้อิสระ แก้ไขได้

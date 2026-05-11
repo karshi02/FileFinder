@@ -141,3 +141,63 @@ Hotkey อาจชนกับโปรแกรมอื่น (เช่น V
 ## License
 
 MIT License — ใช้งานได้อิสระ แก้ไขได้
+
+
+---
+
+## Features
+
+| Feature | รายละเอียด |
+|---------|-----------|
+| **Global Hotkey** | กด hotkey ได้จากทุก window ที่กำลังใช้งาน |
+| **App Icons** | แสดงไอคอนจริงของแต่ละแอพใน popup |
+| **Frequent Apps** | แอพที่ใช้บ่อยขึ้นมาก่อนอัตโนมัติ |
+| **Fast Search** | ผลลัพธ์อัปเดตทันทีขณะพิมพ์ |
+| **Run at Startup** | ตั้งให้รันอัตโนมัติเมื่อเปิด Windows ได้ |
+| **Custom Hotkey** | เปลี่ยน hotkey ได้ตามต้องการผ่าน Settings |
+| **System Tray** | รันเบื้องหลังแบบ tray icon ไม่รกหน้าจอ |
+| **Index Cache** | scan ครั้งแรกเท่านั้น ครั้งต่อไปโหลด cache เร็วมาก |
+
+---
+
+## การใช้งาน
+
+### เปิด Popup
+- กด **Ctrl+Alt+Space** (default) จากทุกที่
+- หรือ **คลิกซ้าย** ที่ tray icon มุมขวาล่าง
+- หรือ **คลิกขวา → Open Search**
+
+### ภายใน Popup
+| ปุ่ม | หน้าที่ |
+|------|--------|
+| พิมพ์ตัวอักษร | ค้นหาแอพ |
+| `↑` `↓` | เลื่อนเลือก |
+| `Enter` | เปิดแอพที่เลือก |
+| `ESC` | ปิด popup |
+| `Backspace` | ลบตัวอักษร |
+
+### Settings
+คลิกขวาที่ tray icon → **Settings**
+
+| ตัวเลือก | หน้าที่ |
+|----------|--------|
+| Hotkey | กด key combo ที่ต้องการเพื่อเปลี่ยน |
+| Run at Startup | เปิด/ปิด การรันอัตโนมัติตอนเปิด Windows |
+| Show recent apps | เปิด/ปิด แสดงแอพล่าสุดตอนเปิด popup |
+| Close popup after launch | เปิด/ปิด ปิด popup หลังกด Enter |
+| Max results | จำนวนผลลัพธ์สูงสุด (5–50) |
+
+---
+
+## Installation
+
+### วิธีที่ 1 — Setup.exe (แนะนำ)
+
+v1.0.1 (2026)
+เพิ่ม auto-fallback hotkey เมื่อ key ซ้ำกับโปรแกรมอื่น
+
+แก้ไข popup ไม่แสดงบน Windows 11
+
+ปรับปรุง performance การโหลด index
+
+เพิ่ม Settings dialog

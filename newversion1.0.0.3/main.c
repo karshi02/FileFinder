@@ -33,8 +33,7 @@ static UniversalIndex *g_idx        = NULL;
 static AppSettings     g_set;
 static NOTIFYICONDATAA g_nid;
 static HWND            g_tray_hwnd  = NULL;
-static volatile LONG   g_scan_done  = FALSE;  /* ใช้ LONG สำหรับ Interlocked API */
-static HANDLE          g_scan_thread = NULL;  /* เก็บ thread handle สำหรับ wait ตอน exit */
+static volatile BOOL   g_scan_done  = FALSE;
 
 /* ================================================================
    callback จาก universal_ui.c เมื่อเปิดแอพ
@@ -63,7 +62,7 @@ static unsigned __stdcall scan_thread(void *arg) {
     }
     if (idx && g_freq) universal_update_freq_score(idx, g_freq);
     g_idx      = idx;
-    InterlockedExchange(&g_scan_done, TRUE);  /* atomic operation */
+    g_scan_done = TRUE;
     if (g_tray_hwnd) PostMessageA(g_tray_hwnd, WM_SCAN_DONE, 0, 0);
     return 0;
 }
@@ -82,7 +81,7 @@ static void tray_add(HWND hwnd) {
 
     UINT mod, vk;
     char hk[80] = "Auto";
-
+    
     if (hotkey_is_registered()) {
         hotkey_get_current(&mod, &vk);
         if (mod != 0 || vk != 0) {
@@ -103,20 +102,20 @@ static void tray_add(HWND hwnd) {
             else if (vk == VK_F11) strcpy(key, "F11");
             else if (vk == VK_F12) strcpy(key, "F12");
             else snprintf(key, sizeof(key), "0x%02X", vk);
-
+            
             snprintf(hk, sizeof(hk), "%s%s%s%s+%s",
                 (mod & MOD_CONTROL) ? "Ctrl" : "",
                 (mod & MOD_ALT) ? "+Alt" : "",
                 (mod & MOD_SHIFT) ? "+Shift" : "",
                 (mod & MOD_WIN) ? "+Win" : "",
                 key);
-
+            
             if (hk[0] == '+') {
                 memmove(hk, hk + 1, strlen(hk));
             }
         }
     }
-
+    
     char tip[100];
     snprintf(tip, sizeof(tip), "Smart Finder  [%s]", hk);
     strncpy(g_nid.szTip, tip, sizeof(g_nid.szTip) - 1);
@@ -126,7 +125,7 @@ static void tray_add(HWND hwnd) {
 
 static void show_tray_menu(HWND hwnd) {
     HMENU hm = CreatePopupMenu();
-
+    
     UINT mod, vk;
     char hk[80] = "Auto";
     if (hotkey_is_registered()) {
@@ -149,20 +148,20 @@ static void show_tray_menu(HWND hwnd) {
             else if (vk == VK_F11) strcpy(key, "F11");
             else if (vk == VK_F12) strcpy(key, "F12");
             else snprintf(key, sizeof(key), "0x%02X", vk);
-
+            
             snprintf(hk, sizeof(hk), "%s%s%s%s+%s",
                 (mod & MOD_CONTROL) ? "Ctrl" : "",
                 (mod & MOD_ALT) ? "+Alt" : "",
                 (mod & MOD_SHIFT) ? "+Shift" : "",
                 (mod & MOD_WIN) ? "+Win" : "",
                 key);
-
+            
             if (hk[0] == '+') {
                 memmove(hk, hk + 1, strlen(hk));
             }
         }
     }
-
+    
     char label[128];
     snprintf(label, sizeof(label), "✅ Smart Finder  [%s]", hk);
     AppendMenuA(hm, MF_STRING | MF_GRAYED, 0, label);
@@ -172,7 +171,7 @@ static void show_tray_menu(HWND hwnd) {
     AppendMenuA(hm, MF_STRING, ID_TRAY_SETTINGS, "  Settings...");
     AppendMenuA(hm, MF_SEPARATOR, 0, NULL);
     AppendMenuA(hm, MF_STRING, ID_TRAY_EXIT, "  Exit");
-
+    
     SetForegroundWindow(hwnd);
     POINT pt;
     GetCursorPos(&pt);
@@ -199,16 +198,16 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
     switch (msg) {
 
     case WM_HOTKEY:
-        /* Debug log - แก้ไข warning %d -> %llu */
+        // Debug: เขียนลงไฟล์
         {
             FILE* debug = fopen("C:\\hotkey_debug.log", "a");
             if (debug) {
-                fprintf(debug, "WM_HOTKEY received! wParam=%llu, g_scan_done=%d, g_idx=%p\n",
-                        (unsigned long long)wParam, (int)g_scan_done, g_idx);
+                fprintf(debug, "WM_HOTKEY received! wParam=%d, g_scan_done=%d, g_idx=%p\n", 
+                        wParam, g_scan_done, g_idx);
                 fclose(debug);
             }
         }
-
+        
         if ((int)wParam == HOTKEY_ID && g_scan_done && g_idx) {
             universal_show_popup(g_idx);
         }
@@ -229,7 +228,7 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
             char msg[512];
             UINT mod, vk;
             char hk[80] = "Auto";
-
+            
             if (hotkey_is_registered()) {
                 hotkey_get_current(&mod, &vk);
                 if (mod != 0 || vk != 0) {
@@ -250,20 +249,20 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
                     else if (vk == VK_F11) strcpy(key, "F11");
                     else if (vk == VK_F12) strcpy(key, "F12");
                     else snprintf(key, sizeof(key), "0x%02X", vk);
-
+                    
                     snprintf(hk, sizeof(hk), "%s%s%s%s+%s",
                         (mod & MOD_CONTROL) ? "Ctrl" : "",
                         (mod & MOD_ALT) ? "+Alt" : "",
                         (mod & MOD_SHIFT) ? "+Shift" : "",
                         (mod & MOD_WIN) ? "+Win" : "",
                         key);
-
+                    
                     if (hk[0] == '+') {
                         memmove(hk, hk + 1, strlen(hk));
                     }
                 }
             }
-
+            
             snprintf(msg, sizeof(msg),
                 "Smart Finder v1.0\n\n"
                 "Hotkey: %s\n\n"
@@ -271,7 +270,7 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
                 "หรือคลิกที่ tray icon\n"
                 "คลิกขวาเพื่อออกจากโปรแกรม",
                 hk);
-
+            
             MessageBoxA(hwnd, msg, "Smart Finder", MB_OK | MB_ICONINFORMATION);
             break;
         }
@@ -328,7 +327,7 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
             char balloon_msg[256];
             UINT mod, vk;
             char hk[80] = "Auto";
-
+            
             if (hotkey_is_registered()) {
                 hotkey_get_current(&mod, &vk);
                 if (mod != 0 || vk != 0) {
@@ -349,20 +348,20 @@ static LRESULT CALLBACK TrayWndProc(HWND hwnd, UINT msg,
                     else if (vk == VK_F11) strcpy(key, "F11");
                     else if (vk == VK_F12) strcpy(key, "F12");
                     else snprintf(key, sizeof(key), "0x%02X", vk);
-
+                    
                     snprintf(hk, sizeof(hk), "%s%s%s%s+%s",
                         (mod & MOD_CONTROL) ? "Ctrl" : "",
                         (mod & MOD_ALT) ? "+Alt" : "",
                         (mod & MOD_SHIFT) ? "+Shift" : "",
                         (mod & MOD_WIN) ? "+Win" : "",
                         key);
-
+                    
                     if (hk[0] == '+') {
                         memmove(hk, hk + 1, strlen(hk));
                     }
                 }
             }
-
+            
             snprintf(balloon_msg, sizeof(balloon_msg),
                 "Smart Finder พร้อมใช้งาน!\nกด %s เพื่อเปิดค้นหา", hk);
             show_balloon("Smart Finder", balloon_msg, NIIF_INFO);
@@ -411,19 +410,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev,
     g_tray_hwnd = CreateWindowExA(0, "SmartFinderTray", NULL, 0, 0, 0, 0, 0,
                                    HWND_MESSAGE, NULL, GetModuleHandle(NULL), NULL);
 
-    /* สำคัญ: ตั้งค่า window handle ให้ hotkey ก่อนลงทะเบียน */
+    // สำคัญ: ตั้งค่า window handle ให้ hotkey ก่อนลงทะเบียน
     hotkey_set_window(g_tray_hwnd);
-
+    
     g_freq = frequent_load(FREQ_PATH);
     if (!g_freq) g_freq = frequent_create();
     else frequent_sort(g_freq);
 
     BOOL hotkey_ok = hotkey_register_auto();
-
+    
     tray_add(g_tray_hwnd);
 
     if (!hotkey_ok) {
-        show_balloon("Smart Finder",
+        show_balloon("Smart Finder", 
             "ไม่สามารถลงทะเบียน Hotkey ได้\n"
             "แต่ยังใช้โปรแกรมได้โดยคลิกที่ icon นี้",
             NIIF_WARNING);
@@ -436,12 +435,11 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev,
         if (g_idx) {
             universal_update_freq_score(g_idx, g_freq);
         }
-        InterlockedExchange(&g_scan_done, TRUE);
+        g_scan_done = TRUE;
         universal_apply_settings(TRUE, 12, TRUE);
     } else {
-        unsigned thread_id;
-        g_scan_thread = (HANDLE)_beginthreadex(NULL, 0, scan_thread, NULL, 0, &thread_id);
-        show_balloon("Smart Finder",
+        _beginthreadex(NULL, 0, scan_thread, NULL, 0, NULL);
+        show_balloon("Smart Finder", 
             "กำลังค้นหาแอพในคอมพิวเตอร์ของคุณ...\nสักครู่ก็ใช้ได้ครับ",
             NIIF_INFO);
     }
@@ -452,16 +450,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrev,
         DispatchMessage(&msg);
     }
 
-    /* รอ scan thread ให้ทำงานเสร็จก่อน exit (ป้องกัน data loss) */
-    if (g_scan_thread) {
-        WaitForSingleObject(g_scan_thread, 3000);
-        CloseHandle(g_scan_thread);
-    }
-
     hotkey_unregister();
     universal_destroy(g_idx);
     frequent_destroy(g_freq);
-
+    
     if (hMutex) CloseHandle(hMutex);
     return 0;
 }
